@@ -1,1 +1,4 @@
 cfg.ini
+logs
+.idea/
+__pycache__/
