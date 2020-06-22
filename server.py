@@ -46,13 +46,13 @@ def start(update, context):
 
 @send_typing_action
 def latest(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text=f"here is latest tweet \n {tweeturl}")
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f"here is latest tweet \n {tweet}")
 
 @send_typing_action
 def all_tweets(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text=f"here are five latest tweet")
 
-    context.bot.send_message(chat_id=update.effective_chat.id, text=f"{tweeturl}")
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f"{tweet}")
     context.bot.send_message(chat_id=update.effective_chat.id, text=f"{tweeturl1}")
     context.bot.send_message(chat_id=update.effective_chat.id, text=f"{tweeturl2}")
     context.bot.send_message(chat_id=update.effective_chat.id, text=f"{tweeturl3}")
