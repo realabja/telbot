@@ -79,7 +79,7 @@ def inline_caps(update, context):
         InlineQueryResultArticle(
             id="latest",
             title="latest tweet",
-            input_message_content=InputTextMessageContent(f"here is latest tweet \n {tweeturl}"))),
+            input_message_content=InputTextMessageContent(f"here is latest tweet \n {tweet}"))),
     results.append(
         InlineQueryResultArticle(
             id="all_tweets",
@@ -115,15 +115,15 @@ dispatcher.add_handler(inline_caps_handler)
 dispatcher.add_handler(unknown_handler)
 
 tweets = []
-tweeturl = ""
+tweet = ""
 def pullTweets():
     while True :
         twls.get_tweets()
         global tweets
-        global tweeturl
+        global tweet
         tweets = twls.get_tweets()
-        tweeturl = tweets[0]
-        time.sleep(5)
+        tweet = tweets[0][1] + " " + tweets[0][0]
+        time.sleep(10)
 def pollTel():
     updater.start_polling()
 
@@ -131,12 +131,9 @@ def pollTel():
 y = Thread(target=pullTweets)
 y.start()
 
-
-
-
-
 x = Thread(target=pollTel)
 x.start()
+
 while True:
     time.sleep(1)
-    print(tweeturl)
+    print(tweet)

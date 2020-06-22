@@ -1,5 +1,8 @@
 import tweepy
 from conf import read_conf
+import re
+
+
 
 
 consumer_key = read_conf("cfg.ini","consumer_key")
@@ -26,7 +29,7 @@ def get_tweets():
         tweet_id = tweet_json['id']
         text = status.text
         url = f"https://twitter.com/realabja/status/{tweet_id}"
-        tweets.append({url,text})
+        tweets.append([url,text])
 
     return tweets
 
