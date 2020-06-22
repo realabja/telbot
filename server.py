@@ -1,9 +1,12 @@
 import telegram
+import twls
 import logging
 from conf import read_conf
 from functools import wraps
 from telegram.ext import Updater, Defaults, MessageHandler, Filters, CommandHandler, InlineQueryHandler
 from telegram import InlineQueryResultArticle, InputTextMessageContent, InlineKeyboardButton
+import time
+from threading import Thread
 
 
 
@@ -12,9 +15,10 @@ logging.basicConfig(filename="logs", format='%(asctime)s - %(name)s - %(levelnam
 
 
 
+
+
 defaults = Defaults()
-token = read_conf("cfg.ini")
-bot = telegram.Bot(token=token, defaults=defaults)
+bot = telegram.Bot(token=read_conf("cfg.ini","token"), defaults=defaults)
 try:
     print(bot.get_me())
 except:
@@ -37,6 +41,8 @@ def send_typing_action(func):
 @send_typing_action
 def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
+
+
 
 @send_typing_action
 def latest(update, context):
@@ -78,7 +84,7 @@ def inline_caps(update, context):
         InlineQueryResultArticle(
             id="all_tweets",
             title="get all tweets",
-            input_message_content=InputTextMessageContent("asfasfasgga")
+            input_message_content=InputTextMessageContent("i cant give more then one tweet at once")
         )
     )
     context.bot.answer_inline_query(update.inline_query.id, results)
@@ -88,7 +94,7 @@ def unknown(update, context):
 
 
 
-tweeturl="https://twitter.com/System32Comics/status/1250852049798848512?s=20"
+
 tweeturl1 = "https://twitter.com/nixcraft/status/1257523899060719623?s=20"
 tweeturl2 = "https://twitter.com/huazy12/status/1268533122880212993?s=20"
 tweeturl3 = "https://twitter.com/nixcraft/status/1272237201661677568?s=20"
@@ -108,9 +114,29 @@ dispatcher.add_handler(all_handler)
 dispatcher.add_handler(inline_caps_handler)
 dispatcher.add_handler(unknown_handler)
 
+tweets = []
+tweeturl = ""
+def pullTweets():
+    while True :
+        twls.get_tweets()
+        global tweets
+        global tweeturl
+        tweets = twls.get_tweets()
+        tweeturl = tweets[0]
+        time.sleep(5)
+def pollTel():
+    updater.start_polling()
+
+
+y = Thread(target=pullTweets)
+y.start()
 
 
 
-updater.start_polling()
 
 
+x = Thread(target=pollTel)
+x.start()
+while True:
+    time.sleep(1)
+    print(tweeturl)
