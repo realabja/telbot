@@ -29,7 +29,7 @@ def get_tweets():
         tweet_id = tweet_json['id']
         text = status.text
         url = f"https://twitter.com/realabja/status/{tweet_id}"
-        tweets.append([url,text])
+        tweets.append(f"{text} \n\n {url}")
 
     return tweets
 

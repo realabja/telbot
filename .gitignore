@@ -1,4 +1,6 @@
 cfg.ini
+chats.db
 logs
 .idea/
 __pycache__/
+tweets.txt
