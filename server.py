@@ -118,7 +118,6 @@ def newtweet():
 
 def pulltweets():
     while True:
-        twls.get_tweets()
         global tweets
         try:
             with open("tweets.txt", "x") as file:
@@ -126,16 +125,16 @@ def pulltweets():
         except:
             pass
         with open("tweets.txt", "r") as file:
-            tweetsfile = file.read()
+            latest_tweet = file.read()
+
 
         tweets = twls.get_tweets()
 
-        if tweets==tweetsfile:
+        if tweets[0][0]!=latest_tweet:
             newtweet()
+            with open("tweets.txt", "w") as file:
+              file.write(tweets[0][0])
 
-        with open("tweets.txt", "w") as file:
-            for item in tweets:
-                file.write(item + '\n')
 
         time.sleep(10)
 
@@ -152,4 +151,4 @@ x.start()
 
 while True:
     time.sleep(6)
-    print(tweets[0])
+
