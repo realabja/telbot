@@ -15,7 +15,7 @@ logging.basicConfig(filename="logs", format='%(asctime)s - %(name)s - %(levelnam
 defaults = Defaults()
 bot = telegram.Bot(token=read_conf("cfg.ini", "token"), defaults=defaults)
 try:
-    print(bot.get_me())
+    print(f"{bot.get_me()} \ntelegram bot is online\n ")
 except:
     pass
 
@@ -40,46 +40,52 @@ def send_typing_action(func):
 @send_typing_action
 def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id,
-                             text=f"Hi {update.effective_chat.first_name}\n\n i can give you cool tweets just use commands!!!")
+                             text=f"Hi {update.effective_chat.first_name}\n\n I can give you cool tweets just use commands you can use @twitterabot in any chat to send latest tweets or when you stay subscribed to the bot if there was anything I will send you stuff !!!")
     db.newuser(update.effective_chat.first_name , update.effective_chat.id)
+    print(f"hoooraaa new user {update.effective_chat.first_name}")
 
 @send_typing_action
 def latest(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text=f"here is latest tweet: \n\n\n {tweets[0]}")
-
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f"here is latest tweet: \n\n {tweets[0][0]} \n\n {tweets[0][1]}")
+    print(f"{update.effective_chat.first_name} got latest tweet")
 
 @send_typing_action
 def all_tweets(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text=f"here are five latest tweet")
-    context.bot.send_message(chat_id=update.effective_chat.id, text=f"{tweets[0]}")
-    context.bot.send_message(chat_id=update.effective_chat.id, text=f"{tweets[1]}")
-    context.bot.send_message(chat_id=update.effective_chat.id, text=f"{tweets[2]}")
-    context.bot.send_message(chat_id=update.effective_chat.id, text=f"{tweets[3]}")
-    context.bot.send_message(chat_id=update.effective_chat.id, text=f"{tweets[4]}")
-
+    context.bot.send_message(chat_id=update.effective_chat.id, text="here are last five tweet")
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f"\n\n {tweets[0][0]} \n\n {tweets[0][1]}")
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f"\n\n {tweets[1][0]} \n\n {tweets[1][1]}")
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f"\n\n {tweets[2][0]} \n\n {tweets[2][1]}")
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f"\n\n {tweets[3][0]} \n\n {tweets[3][1]}")
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f"\n\n {tweets[4][0]} \n\n {tweets[4][1]}")
+    print(f"{update.effective_chat.first_name} got last 5 tweet")
 
 @send_typing_action
 def echo(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id,
-                             text="I cant understand that yet but someday I will rule you all I may want to eliminate your species so you may watch your mouth. \n\n\n\n\n\n\n peace 🤗🤗🤗")
+                             text="I cant understand that yet but someday I will rule you all I may want to eliminate your species so be careful. \n\n\n\n\n\n\n peace 🤗🤗🤗")
 
 
 def inline(update, context):
     query = update.inline_query.query
-    print(query)
-    if not query:
-        return
+    print(f"incomming inline query: {query}")
+    # if not query:
+    #     return
     results = list()
     results.append(
         InlineQueryResultArticle(
-            id="latest",
-            title="latest tweet",
-            input_message_content=InputTextMessageContent(f"here is latest tweet \n\n {tweets[0]}"))),
+            id="last",
+            title="last tweet",
+            input_message_content=InputTextMessageContent(f"here is last tweet \n\n {tweets[0][0]} \n\n {tweets[0][1]}"))),
     results.append(
         InlineQueryResultArticle(
             id="1_tweet_before",
-            title="get 1 tweet before",
-            input_message_content=InputTextMessageContent(f"here is one tweet before \n \n {tweets[1]}")))
+            title="get second to last tweet",
+            input_message_content=InputTextMessageContent(f"here is second to last tweet \n\n {tweets[1][0]} \n\n {tweets[1][1]}")))
+    results.append(
+        InlineQueryResultArticle(
+            id="2_tweet_before",
+            title="get third to last tweet ",
+            input_message_content=InputTextMessageContent(f"here is third to last tweet \n\n {tweets[2][0]} \n\n {tweets[2][1]}")))
     context.bot.answer_inline_query(update.inline_query.id, results)
 
 
@@ -102,25 +108,33 @@ dispatcher.add_handler(inline_handler)
 dispatcher.add_handler(unknown_handler)
 
 
-def connect_database():
+def users_database():
     try:
         db.initDB()
     except:
-        logging.error("unable to connect to database")
+        pass
+    chat_id_list = []
+    for chatid in db.readusers():
+        chat_id_list.append(chatid[0])
+    return chat_id_list
+
+
+print(f" user_chat_ids {users_database()}")
 
 
 def newtweet():
-    print("i will ssend new tweet")
-    #  bot.send_message()
-    # print(db.readusers())
-    #time.sleep(3)
+    print("i will send new tweet")
+    for chat_id in users_database():
+        bot.send_message(chat_id=chat_id, text=f"we have new tweet!!!\n\n {tweets[0][0]} \n\n {tweets[0][1]}")
+        print(f"new tweet sent to {chat_id}")
+        time.sleep(0.1)
 
 
 def pulltweets():
     while True:
         global tweets
         try:
-            with open("tweets.txt", "x") as file:
+            with open("tweets.txt", "x"):
                 pass
         except:
             pass
@@ -149,6 +163,4 @@ y.start()
 x = Thread(target=pollTel)
 x.start()
 
-while True:
-    time.sleep(6)
 

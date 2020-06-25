@@ -9,7 +9,7 @@ logging.basicConfig(filename="logs", format='%(asctime)s - %(name)s - %(levelnam
 def initDB():
     chatsDB = sqlite3.connect("chats.db")
     chatsDB_curser = chatsDB.cursor()
-    chatsDB_curser.execute("CREATE TABLE users (name text, chat_id integer)")
+    chatsDB_curser.execute("CREATE TABLE users (name text, chat_id integer,PRIMARY KEY (chat_id))")
     chatsDB.commit()
     chatsDB.close()
 
@@ -17,7 +17,7 @@ def initDB():
 def newuser(name, chatid):
     chatsDB = sqlite3.connect("chats.db")
     chatsDB_curser = chatsDB.cursor()
-    chatsDB_curser.execute("INSERT INTO users VALUES (?, ?)", (name, chatid))
+    chatsDB_curser.execute("REPLACE INTO users VALUES (?, ?)", (name, chatid))
     chatsDB.commit()
     logging.info(f"subscriber {name} with chat id {chatid} added to DB")
     chatsDB.close()
@@ -26,8 +26,16 @@ def newuser(name, chatid):
 def readusers ():
     chatsDB = sqlite3.connect("chats.db")
     chatsDB_curser = chatsDB.cursor()
-    chatsDB_curser.execute("SELECT chat_id from users")
+    chatsDB_curser.execute("SELECT chat_id FROM users")
     chat_ids = chatsDB_curser.fetchall()
     chatsDB.close()
+    logging.info("reading users")
     return chat_ids
 
+
+def remove_users():
+    chatsDB = sqlite3.connect("chats.db")
+    chatsDB_curser = chatsDB.cursor()
+    chatsDB_curser.execute("DELETE FROM users")
+    chatsDB.commit()
+    chatsDB.close()
